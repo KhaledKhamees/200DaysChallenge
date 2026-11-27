@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>20-Day Plan (Nov 27 – Dec 17) — Sprint & Habit Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Custom subtle scrollbars and number input cleanup */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    .star-btn svg {
+      transition: transform 0.12s ease, color 0.12s ease;
+    }
+    .star-btn:hover svg {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body class="bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 antialiased transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- Sticky Top Header & Live Metrics Dashboard -->
+  <header class="sticky top-0 z-30 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5">
+      <!-- Title Bar & Global Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800/80">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+          <h1 class="text-base sm:text-lg font-semibold tracking-tight">20-Day Plan (Nov 27 – Dec 17)</h1>
+          <span id="save-status-badge" class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60 transition-colors">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span id="save-status-text">Saved locally</span>
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Theme Toggle -->
+          <button onclick="toggleTheme()" title="Toggle Light/Dark Mode" class="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition">
+            <svg id="sun-icon" class="w-4 h-4 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg id="moon-icon" class="w-4 h-4 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+
+          <!-- Export JSON -->
+          <button onclick="exportData()" title="Export Backup (.json)" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span class="hidden sm:inline">Export</span>
+          </button>
+
+          <!-- Import JSON -->
+          <button onclick="triggerImport()" title="Restore from Backup (.json)" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <span class="hidden sm:inline">Import</span>
+          </button>
+          <input id="import-file-input" type="file" accept=".json,application/json" onchange="handleImportFile(event)" class="hidden" />
+
+          <!-- Reset Data -->
+          <button onclick="openResetModal()" title="Reset All Data" class="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-zinc-500 hover:text-rose-600 dark:text-zinc-400 dark:hover:text-rose-400 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5 Real-Time Summary KPI Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 pt-3">
+        <!-- KPI 1: Tasks Completed -->
+        <div class="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3">
+          <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+            <span>Tasks Completed</span>
+            <span id="kpi-tasks-pct" class="font-mono font-medium text-zinc-700 dark:text-zinc-300">0%</span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="kpi-tasks-count" class="text-lg sm:text-xl font-bold tracking-tight">0 / 21</span>
+            <span class="text-[11px] text-zinc-400">days</span>
+          </div>
+          <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden mt-2">
+            <div id="kpi-tasks-bar" class="h-full bg-zinc-900 dark:bg-zinc-100 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Focus Time -->
+        <div class="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3">
+          <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+            <span>Total Focus</span>
+            <span id="kpi-focus-avg" class="font-mono text-[11px] text-zinc-400">0m/day</span>
+          </div>
+          <div class="flex items-baseline gap-1.5">
+            <span id="kpi-focus-total" class="text-lg sm:text-xl font-bold tracking-tight font-mono">0h 00m</span>
+          </div>
+          <div class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5 truncate">
+            Target: <span id="kpi-active-day-name" class="font-medium text-zinc-700 dark:text-zinc-300">Nov 27</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: Quran Days -->
+        <div class="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3">
+          <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+            <span>Quran Habit</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="kpi-quran-count" class="text-lg sm:text-xl font-bold tracking-tight font-mono">0 / 21</span>
+            <span id="kpi-quran-pct" class="text-[11px] font-mono text-zinc-400">0%</span>
+          </div>
+          <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden mt-2">
+            <div id="kpi-quran-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- KPI 4: Workout Days -->
+        <div class="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3">
+          <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+            <span>Workout Habit</span>
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span id="kpi-workout-count" class="text-lg sm:text-xl font-bold tracking-tight font-mono">0 / 21</span>
+            <span id="kpi-workout-pct" class="text-[11px] font-mono text-zinc-400">0%</span>
+          </div>
+          <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden mt-2">
+            <div id="kpi-workout-bar" class="h-full bg-amber-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- KPI 5: Total & Average Rating -->
+        <div class="col-span-2 sm:col-span-1 bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200/80 dark:border-zinc-800 rounded-xl p-2.5 sm:p-3">
+          <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+            <span>Total Rating</span>
+            <span id="kpi-rated-days" class="font-mono text-[11px] text-zinc-400">0 rated</span>
+          </div>
+          <div class="flex items-baseline justify-between gap-2">
+            <div>
+              <span id="kpi-rating-total" class="text-lg sm:text-xl font-bold tracking-tight font-mono">0</span>
+              <span class="text-xs text-zinc-400 font-mono">/ 105</span>
+            </div>
+            <div class="flex items-center gap-1 text-xs sm:text-sm font-semibold text-amber-500">
+              <span id="kpi-rating-avg">0.0</span>
+              <span>/ 5 ★</span>
+            </div>
+          </div>
+          <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden mt-2">
+            <div id="kpi-rating-bar" class="h-full bg-amber-400 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-5 flex-1 space-y-5">
+
+    <!-- Built-In Live Focus Timer & Pomodoro Bar -->
+    <section class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3.5 sm:p-4 shadow-xs">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <!-- Left: Mode & Day Selector -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3 2 6m20 0-3-3M10 2h4"/></svg>
+            <span>Focus Timer</span>
+          </div>
+
+          <select id="timer-day-select" onchange="selectTimerDay(this.value)" aria-label="Select target day for focus timer" class="text-xs font-medium bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-2.5 py-1.5 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-zinc-400">
+            <!-- Populated via JS -->
+          </select>
+
+          <!-- Mode Presets: Stopwatch, 25m Pomodoro, 50m Deep Work -->
+          <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 p-0.5 rounded-lg border border-zinc-200/80 dark:border-zinc-700/80">
+            <button type="button" data-mode="stopwatch" onclick="setTimerMode('stopwatch')" class="timer-mode-btn px-2.5 py-1 rounded-md text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs transition">Stopwatch</button>
+            <button type="button" data-mode="pomo25" onclick="setTimerMode('pomo25')" class="timer-mode-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition">25m</button>
+            <button type="button" data-mode="pomo50" onclick="setTimerMode('pomo50')" class="timer-mode-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition">50m</button>
+          </div>
+        </div>
+
+        <!-- Right: Digital Readout & Controls -->
+        <div class="flex flex-wrap items-center justify-between md:justify-end gap-2.5">
+          <div id="timer-display" class="font-mono text-xl sm:text-2xl font-bold tabular-nums tracking-tight text-zinc-900 dark:text-zinc-100 px-2">00:00</div>
+
+          <div class="flex items-center gap-1.5">
+            <button id="timer-toggle-btn" type="button" onclick="toggleFocusTimer()" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition">
+              Start
+            </button>
+            <button id="timer-reset-btn" type="button" onclick="resetFocusTimer()" class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+              Reset
+            </button>
+            <button id="timer-save-btn" type="button" onclick="saveTimerToActiveDay()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 transition disabled:opacity-40 disabled:pointer-events-none" disabled>
+              Log to Day
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Track Filter Pills & Legend -->
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div id="filter-pills" class="flex flex-wrap items-center gap-1.5">
+        <button data-filter="ALL" onclick="setFilter('ALL')" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 transition">All (21)</button>
+        <button data-filter="PS" onclick="setFilter('PS')" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">PS (9)</button>
+        <button data-filter="SD" onclick="setFilter('SD')" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">SD (6)</button>
+        <button data-filter="Open Source" onclick="setFilter('Open Source')" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">Open Source (3)</button>
+        <button data-filter="Backend" onclick="setFilter('Backend')" class="filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">Backend (3)</button>
+      </div>
+      <div class="text-xs text-zinc-400">
+        All changes auto-save to your browser • Use <span class="text-zinc-600 dark:text-zinc-300 font-medium">Export</span> to transfer devices
+      </div>
+    </div>
+
+    <!-- Daily Schedule List -->
+    <section class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden shadow-xs">
+      <!-- Desktop Column Headers -->
+      <div class="hidden lg:grid lg:grid-cols-12 gap-3 px-4 py-2.5 bg-zinc-50/80 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <div class="col-span-2">Date</div>
+        <div class="col-span-4">Task & Track</div>
+        <div class="col-span-2">Focus Time</div>
+        <div class="col-span-2">Habits</div>
+        <div class="col-span-2 text-right">Daily Rating & Note</div>
+      </div>
+
+      <!-- Rows Container -->
+      <div id="tracker-rows" class="divide-y divide-zinc-100 dark:divide-zinc-800/80">
+        <!-- Populated via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Bottom Goals Checklist Card -->
+    <section class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 sm:p-5 shadow-xs">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-sm font-semibold tracking-tight">20-Day Sprint Goals</h2>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">Check off overarching milestones as you complete your tracks</p>
+        </div>
+        <span id="goals-summary-badge" class="text-xs font-mono px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">0 / 4 Achieved</span>
+      </div>
+      <div id="goals-checklist" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Populated via JavaScript -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium px-3.5 py-2.5 rounded-lg shadow-lg">
+    Saved
+  </div>
+
+  <!-- Custom Reset Confirmation Modal (No native confirm/alert) -->
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-sm w-full p-5 shadow-xl">
+      <h3 class="text-base font-semibold mb-1.5">Reset All Tracker Data?</h3>
+      <p class="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
+        This will clear all completed checkboxes, focus minutes, Quran/Workout streaks, daily ratings, and notes. This action cannot be undone.
+      </p>
+      <div class="flex items-center justify-end gap-2">
+        <button onclick="closeResetModal()" class="px-3 py-1.5 rounded-lg text-xs font-medium border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+          Cancel
+        </button>
+        <button onclick="confirmResetData()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-600 text-white hover:bg-rose-500 transition">
+          Yes, Reset Everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial 21-entry schedule dataset (Nov 27 – Dec 17)
+    const INITIAL_DAYS = [
+      { id: 'nov-27', date: 'Nov 27', day: 'Fri', track: 'Open Source', task: 'Find a project & beginner videos', isToday: true },
+      { id: 'nov-28', date: 'Nov 28', day: 'Sat', track: 'PS', task: 'Arrays' },
+      { id: 'nov-29', date: 'Nov 29', day: 'Sun', track: 'SD', task: 'System Requirements & Architectural Drivers' },
+      { id: 'nov-30', date: 'Nov 30', day: 'Mon', track: 'PS', task: 'Arrays' },
+      { id: 'dec-01', date: 'Dec 1',  day: 'Tue', track: 'SD', task: 'Quality Attributes' },
+      { id: 'dec-02', date: 'Dec 2',  day: 'Wed', track: 'PS', task: 'Two Pointers' },
+      { id: 'dec-03', date: 'Dec 3',  day: 'Thu', track: 'Backend', task: 'Lectures 1–4' },
+      { id: 'dec-04', date: 'Dec 4',  day: 'Fri', track: 'Open Source', task: 'Setup & Learn' },
+      { id: 'dec-05', date: 'Dec 5',  day: 'Sat', track: 'PS', task: 'Two Pointers' },
+      { id: 'dec-06', date: 'Dec 6',  day: 'Sun', track: 'SD', task: 'API Design' },
+      { id: 'dec-07', date: 'Dec 7',  day: 'Mon', track: 'PS', task: 'Sliding Window' },
+      { id: 'dec-08', date: 'Dec 8',  day: 'Tue', track: 'SD', task: 'Architectural Building Blocks' },
+      { id: 'dec-09', date: 'Dec 9',  day: 'Wed', track: 'PS', task: 'Sliding Window' },
+      { id: 'dec-10', date: 'Dec 10', day: 'Thu', track: 'Backend', task: 'Lectures 5–8' },
+      { id: 'dec-11', date: 'Dec 11', day: 'Fri', track: 'Open Source', task: 'First Contribution' },
+      { id: 'dec-12', date: 'Dec 12', day: 'Sat', track: 'PS', task: 'Mixed Problems' },
+      { id: 'dec-13', date: 'Dec 13', day: 'Sun', track: 'SD', task: 'Global-Scale Data Storage' },
+      { id: 'dec-14', date: 'Dec 14', day: 'Mon', track: 'PS', task: 'Weakest Topic' },
+      { id: 'dec-15', date: 'Dec 15', day: 'Tue', track: 'SD', task: 'Review & Practice' },
+      { id: 'dec-16', date: 'Dec 16', day: 'Wed', track: 'PS', task: 'Self-Test' },
+      { id: 'dec-17', date: 'Dec 17', day: 'Thu', track: 'Backend', task: 'Lectures 9–11' }
+    ];
+
+    const SPRINT_GOALS = [
+      { id: 'goal-ps', track: 'PS', title: 'Problem Solving (PS)', desc: 'Master Arrays, Two Pointers, and Sliding Window.' },
+      { id: 'goal-sd', track: 'SD', title: 'System Design', desc: 'Complete 3–5 course sections.' },
+      { id: 'goal-be', track: 'Backend', title: 'Backend', desc: 'Finish one section (11 lectures, 3h 26m).' },
+      { id: 'goal-os', track: 'Open Source', title: 'Open Source', desc: 'Find a project, learn the workflow, and start contributing.' }
+    ];
+
+    const STORAGE_KEY = 'twenty_day_tracker_v1';
+    const THEME_KEY = 'twenty_day_tracker_theme_v1';
+
+    // Application State
+    let appState = {
+      entries: {},
+      goals: {},
+      activeTimerDayId: 'nov-27',
+      currentFilter: 'ALL'
+    };
+
+    // Live Focus Timer State
+    let timerInterval = null;
+    let timerMode = 'stopwatch'; // 'stopwatch' | 'pomo25' | 'pomo50'
+    let timerRemainingSeconds = 0;
+    let timerElapsedSeconds = 0;
+    let timerRunning = false;
+
+    // Track Badge Styling Helper
+    function getTrackBadgeClasses(track) {
+      switch (track) {
+        case 'Open Source':
+          return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/60';
+        case 'PS':
+          return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/60';
+        case 'SD':
+          return 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800/60';
+        case 'Backend':
+          return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/60';
+        default:
+          return 'bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700';
+      }
+    }
+
+    // Initialize default entry structure
+    function createEmptyEntry() {
+      return {
+        done: false,
+        focusMinutes: 0,
+        quran: false,
+        workout: false,
+        rating: 0,
+        note: '',
+        noteOpen: false
+      };
+    }
+
+    // Load from localStorage with fallback
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState.entries = parsed.entries || {};
+          appState.goals = parsed.goals || {};
+          appState.activeTimerDayId = parsed.activeTimerDayId || 'nov-27';
+        }
+      } catch (e) {
+        console.error('Failed to load state from localStorage:', e);
+      }
+
+      // Ensure every day and goal has a valid object
+      INITIAL_DAYS.forEach(d => {
+        if (!appState.entries[d.id]) {
+          appState.entries[d.id] = createEmptyEntry();
+        }
+      });
+      SPRINT_GOALS.forEach(g => {
+        if (typeof appState.goals[g.id] !== 'boolean') {
+          appState.goals[g.id] = false;
+        }
+      });
+
+      // Theme setup
+      try {
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {
+        console.error('Theme load error:', e);
+      }
+    }
+
+    // Save to localStorage and pulse the "Saved locally" badge
+    let savePulseTimeout = null;
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          entries: appState.entries,
+          goals: appState.goals,
+          activeTimerDayId: appState.activeTimerDayId,
+          updatedAt: new Date().toISOString()
+        }));
+        const statusText = document.getElementById('save-status-text');
+        if (statusText) {
+          statusText.textContent = 'Saving...';
+          clearTimeout(savePulseTimeout);
+          savePulseTimeout = setTimeout(() => {
+            statusText.textContent = 'Saved locally';
+          }, 450);
+        }
+      } catch (e) {
+        console.error('Failed to save state:', e);
+        const statusText = document.getElementById('save-status-text');
+        if (statusText) statusText.textContent = 'Storage full';
+      }
+    }
+
+    // Sync state automatically across multiple open browser tabs
+    window.addEventListener('storage', (event) => {
+      if (event.key === STORAGE_KEY && event.newValue) {
+        try {
+          const parsed = JSON.parse(event.newValue);
+          appState.entries = parsed.entries || appState.entries;
+          appState.goals = parsed.goals || appState.goals;
+          appState.activeTimerDayId = parsed.activeTimerDayId || appState.activeTimerDayId;
+          updateTimerTargetDisplay();
+          updateKPIs();
+          renderRows();
+          renderGoals();
+          showToast('Synced changes from another tab');
+        } catch (e) {
+          console.error('Cross-tab sync error:', e);
+        }
+      }
+    });
+
+    // Show subtle toast message
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-2');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+      }, 2000);
+    }
+
+    // Toggle Light/Dark Theme
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      try {
+        localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+      } catch (e) {}
+    }
+
+    // Filter Pills Handler
+    function setFilter(filter) {
+      appState.currentFilter = filter;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        const isSelected = btn.getAttribute('data-filter') === filter;
+        if (isSelected) {
+          btn.className = 'filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 transition';
+        } else {
+          btn.className = 'filter-pill px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition';
+        }
+      });
+      renderRows();
+    }
+
+    // Update a single field for a day
+    function updateDayField(dayId, field, value) {
+      if (!appState.entries[dayId]) {
+        appState.entries[dayId] = createEmptyEntry();
+      }
+      appState.entries[dayId][field] = value;
+      saveState();
+      updateKPIs();
+      if (field !== 'note') {
+        renderRows();
+      }
+    }
+
+    // Toggle a milestone goal
+    function toggleGoal(goalId, checked) {
+      appState.goals[goalId] = checked;
+      saveState();
+      renderGoals();
+    }
+
+    // Set star rating (clicking active star clears it to 0)
+    function setRating(dayId, stars) {
+      const current = appState.entries[dayId].rating || 0;
+      const next = current === stars ? 0 : stars;
+      updateDayField(dayId, 'rating', next);
+    }
+
+    // Toggle note drawer for a row
+    function toggleNoteDrawer(dayId) {
+      appState.entries[dayId].noteOpen = !appState.entries[dayId].noteOpen;
+      saveState();
+      renderRows();
+      if (appState.entries[dayId].noteOpen) {
+        setTimeout(() => {
+          const input = document.getElementById(`note-input-${dayId}`);
+          if (input) input.focus();
+        }, 30);
+      }
+    }
+
+    // Populate and sync Focus Timer Day Selector
+    function populateTimerDaySelect() {
+      const select = document.getElementById('timer-day-select');
+      if (!select) return;
+      select.innerHTML = INITIAL_DAYS.map(d =>
+        `<option value="${d.id}" ${d.id === appState.activeTimerDayId ? 'selected' : ''}>${d.date} (${d.day}) — ${d.track}</option>`
+      ).join('');
+    }
+
+    function selectTimerDay(dayId) {
+      appState.activeTimerDayId = dayId;
+      saveState();
+      updateTimerTargetDisplay();
+      renderRows();
+      const dayObj = INITIAL_DAYS.find(d => d.id === dayId);
+      if (dayObj) showToast(`Focus timer linked to ${dayObj.date}`);
+    }
+
+    function updateTimerTargetDisplay() {
+      const dayObj = INITIAL_DAYS.find(d => d.id === appState.activeTimerDayId) || INITIAL_DAYS[0];
+      document.getElementById('kpi-active-day-name').textContent = dayObj.date;
+      const select = document.getElementById('timer-day-select');
+      if (select && select.value !== appState.activeTimerDayId) {
+        select.value = appState.activeTimerDayId;
+      }
+    }
+
+    // Focus Timer & Pomodoro Controls
+    function formatClock(sec) {
+      const mins = Math.floor(sec / 60);
+      const remSec = sec % 60;
+      return `${String(mins).padStart(2, '0')}:${String(remSec).padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      const displaySec = timerMode === 'stopwatch' ? timerElapsedSeconds : timerRemainingSeconds;
+      document.getElementById('timer-display').textContent = formatClock(displaySec);
+      const saveBtn = document.getElementById('timer-save-btn');
+      saveBtn.disabled = timerElapsedSeconds === 0;
+    }
+
+    function setTimerMode(mode) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerMode = mode;
+      timerElapsedSeconds = 0;
+
+      if (mode === 'pomo25') {
+        timerRemainingSeconds = 25 * 60;
+      } else if (mode === 'pomo50') {
+        timerRemainingSeconds = 50 * 60;
+      } else {
+        timerRemainingSeconds = 0;
+      }
+
+      document.querySelectorAll('.timer-mode-btn').forEach(btn => {
+        const isSelected = btn.getAttribute('data-mode') === mode;
+        btn.className = isSelected
+          ? 'timer-mode-btn px-2.5 py-1 rounded-md text-xs font-medium bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-2xs transition'
+          : 'timer-mode-btn px-2.5 py-1 rounded-md text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition';
+      });
+
+      document.getElementById('timer-toggle-btn').textContent = 'Start';
+      updateTimerUI();
+    }
+
+    function toggleFocusTimer() {
+      const btn = document.getElementById('timer-toggle-btn');
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        btn.textContent = 'Resume';
+      } else {
+        if (timerMode !== 'stopwatch' && timerRemainingSeconds <= 0) {
+          timerRemainingSeconds = (timerMode === 'pomo25' ? 25 : 50) * 60;
+        }
+        timerRunning = true;
+        btn.textContent = 'Pause';
+        timerInterval = setInterval(() => {
+          timerElapsedSeconds++;
+          if (timerMode !== 'stopwatch') {
+            timerRemainingSeconds = Math.max(0, timerRemainingSeconds - 1);
+            if (timerRemainingSeconds === 0) {
+              clearInterval(timerInterval);
+              timerRunning = false;
+              btn.textContent = 'Start';
+              showToast('Pomodoro session complete! Click "Log to Day" to save.');
+            }
+          }
+          updateTimerUI();
+        }, 1000);
+      }
+    }
+
+    function resetFocusTimer() {
+      setTimerMode(timerMode);
+    }
+
+    function saveTimerToActiveDay() {
+      if (timerElapsedSeconds === 0) return;
+      const minsToAdd = Math.max(1, Math.round(timerElapsedSeconds / 60));
+      const dayId = appState.activeTimerDayId;
+      const currentMins = Number(appState.entries[dayId].focusMinutes) || 0;
+      appState.entries[dayId].focusMinutes = currentMins + minsToAdd;
+
+      saveState();
+      updateKPIs();
+      renderRows();
+      resetFocusTimer();
+
+      const dayObj = INITIAL_DAYS.find(d => d.id === dayId);
+      showToast(`Logged +${minsToAdd}m to ${dayObj ? dayObj.date : dayId}`);
+    }
+
+    // Format minutes into "Xh Ym"
+    function formatHoursMinutes(totalMins) {
+      const h = Math.floor(totalMins / 60);
+      const m = totalMins % 60;
+      return `${h}h ${String(m).padStart(2, '0')}m`;
+    }
+
+    // Recalculate all top summary metrics
+    function updateKPIs() {
+      const totalDays = INITIAL_DAYS.length; // 21 entries (Nov 27 – Dec 17)
+      let completedTasks = 0;
+      let totalFocusMins = 0;
+      let quranDays = 0;
+      let workoutDays = 0;
+      let totalRatingPts = 0;
+      let ratedDaysCount = 0;
+
+      INITIAL_DAYS.forEach(d => {
+        const entry = appState.entries[d.id] || createEmptyEntry();
+        if (entry.done) completedTasks++;
+        totalFocusMins += Math.max(0, Number(entry.focusMinutes) || 0);
+        if (entry.quran) quranDays++;
+        if (entry.workout) workoutDays++;
+        if (entry.rating > 0) {
+          totalRatingPts += entry.rating;
+          ratedDaysCount++;
+        }
+      });
+
+      // 1. Tasks
+      const taskPct = Math.round((completedTasks / totalDays) * 100);
+      document.getElementById('kpi-tasks-count').textContent = `${completedTasks} / ${totalDays}`;
+      document.getElementById('kpi-tasks-pct').textContent = `${taskPct}%`;
+      document.getElementById('kpi-tasks-bar').style.width = `${taskPct}%`;
+
+      // 2. Focus Time
+      document.getElementById('kpi-focus-total').textContent = formatHoursMinutes(totalFocusMins);
+      const avgMins = Math.round(totalFocusMins / totalDays);
+      document.getElementById('kpi-focus-avg').textContent = `${avgMins}m/day`;
+
+      // 3. Quran Habit
+      const quranPct = Math.round((quranDays / totalDays) * 100);
+      document.getElementById('kpi-quran-count').textContent = `${quranDays} / ${totalDays}`;
+      document.getElementById('kpi-quran-pct').textContent = `${quranPct}%`;
+      document.getElementById('kpi-quran-bar').style.width = `${quranPct}%`;
+
+      // 4. Workout Habit
+      const workoutPct = Math.round((workoutDays / totalDays) * 100);
+      document.getElementById('kpi-workout-count').textContent = `${workoutDays} / ${totalDays}`;
+      document.getElementById('kpi-workout-pct').textContent = `${workoutPct}%`;
+      document.getElementById('kpi-workout-bar').style.width = `${workoutPct}%`;
+
+      // 5. Ratings
+      const maxPts = totalDays * 5; // 105 pts
+      const avgRating = ratedDaysCount > 0 ? (totalRatingPts / ratedDaysCount).toFixed(1) : '0.0';
+      document.getElementById('kpi-rating-total').textContent = totalRatingPts;
+      document.getElementById('kpi-rating-avg').textContent = avgRating;
+      document.getElementById('kpi-rated-days').textContent = `${ratedDaysCount} rated`;
+      document.getElementById('kpi-rating-bar').style.width = `${(totalRatingPts / maxPts) * 100}%`;
+    }
+
+    // Render Bottom Goals Checklist Card
+    function renderGoals() {
+      const container = document.getElementById('goals-checklist');
+      if (!container) return;
+
+      let achieved = 0;
+      container.innerHTML = SPRINT_GOALS.map(g => {
+        const checked = !!appState.goals[g.id];
+        if (checked) achieved++;
+        const badgeClasses = getTrackBadgeClasses(g.track);
+
+        return `
+          <label for="${g.id}" class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition select-none ${checked ? 'bg-zinc-50/80 dark:bg-zinc-800/30 border-zinc-200 dark:border-zinc-800' : 'bg-white dark:bg-zinc-900 border-zinc-200/90 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/40'}">
+            <input
+              type="checkbox"
+              id="${g.id}"
+              ${checked ? 'checked' : ''}
+              onchange="toggleGoal('${g.id}', this.checked)"
+              class="mt-0.5 w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 accent-zinc-900 dark:accent-zinc-100 cursor-pointer"
+            />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-xs font-semibold ${checked ? 'line-through text-zinc-400 dark:text-zinc-500' : 'text-zinc-800 dark:text-zinc-200'}">${g.title}</span>
+                <span class="text-[10px] font-medium px-1.5 py-0.5 rounded border ${badgeClasses}">${g.track}</span>
+              </div>
+              <p class="text-xs leading-relaxed ${checked ? 'line-through text-zinc-400 dark:text-zinc-500' : 'text-zinc-500 dark:text-zinc-400'}">${g.desc}</p>
+            </div>
+          </label>
+        `;
+      }).join('');
+
+      const badge = document.getElementById('goals-summary-badge');
+      if (badge) badge.textContent = `${achieved} / ${SPRINT_GOALS.length} Achieved`;
+    }
+
+    // Render Daily Tracker Rows
+    function renderRows() {
+      const container = document.getElementById('tracker-rows');
+      const filteredDays = INITIAL_DAYS.filter(d =>
+        appState.currentFilter === 'ALL' || d.track === appState.currentFilter
+      );
+
+      // Update filter counts dynamically
+      const counts = {
+        ALL: INITIAL_DAYS.length,
+        PS: INITIAL_DAYS.filter(d => d.track === 'PS').length,
+        SD: INITIAL_DAYS.filter(d => d.track === 'SD').length,
+        'Open Source': INITIAL_DAYS.filter(d => d.track === 'Open Source').length,
+        Backend: INITIAL_DAYS.filter(d => d.track === 'Backend').length
+      };
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        const f = btn.getAttribute('data-filter');
+        const label = f === 'ALL' ? 'All' : f;
+        btn.textContent = `${label} (${counts[f]})`;
+      });
+
+      container.innerHTML = filteredDays.map(d => {
+        const entry = appState.entries[d.id] || createEmptyEntry();
+        const isTimerTarget = appState.activeTimerDayId === d.id;
+        const badgeClasses = getTrackBadgeClasses(d.track);
+        const hasNote = entry.note && entry.note.trim().length > 0;
+
+        // Build 5 interactive stars
+        let starsHtml = '';
+        for (let s = 1; s <= 5; s++) {
+          const active = s <= entry.rating;
+          starsHtml += `
+            <button type="button" onclick="setRating('${d.id}', ${s})" title="Rate ${s}/5" class="star-btn p-0.5 focus:outline-none ${active ? 'text-amber-400' : 'text-zinc-300 dark:text-zinc-700 hover:text-amber-300'}">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            </button>
+          `;
+        }
+
+        return `
+          <div class="group transition-colors ${entry.done ? 'bg-zinc-50/70 dark:bg-zinc-900/40' : 'hover:bg-zinc-50/60 dark:hover:bg-zinc-800/25'} ${d.isToday ? 'ring-1 ring-inset ring-emerald-500/30 bg-emerald-50/20 dark:bg-emerald-950/10' : ''}">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 px-4 py-3 items-center">
+
+              <!-- Col 1: Date & Day -->
+              <div class="lg:col-span-2 flex items-center justify-between lg:justify-start gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs sm:text-sm font-semibold ${d.isToday ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-800 dark:text-zinc-200'}">${d.date}</span>
+                  <span class="text-xs text-zinc-400 font-medium">${d.day}</span>
+                  ${d.isToday ? '<span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">Today</span>' : ''}
+                </div>
+                <!-- Mobile Track Badge -->
+                <span class="lg:hidden text-[11px] font-medium px-2 py-0.5 rounded-md border ${badgeClasses}">${d.track}</span>
+              </div>
+
+              <!-- Col 2: Main Task Checkbox & Description -->
+              <div class="lg:col-span-4 flex items-start sm:items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="chk-${d.id}"
+                  ${entry.done ? 'checked' : ''}
+                  onchange="updateDayField('${d.id}', 'done', this.checked)"
+                  class="mt-0.5 sm:mt-0 w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 focus:ring-0 cursor-pointer accent-zinc-900 dark:accent-zinc-100"
+                />
+                <div class="flex flex-wrap items-center gap-2 min-w-0">
+                  <span class="hidden lg:inline-block shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-md border ${badgeClasses}">${d.track}</span>
+                  <label for="chk-${d.id}" class="text-sm cursor-pointer select-none leading-snug ${entry.done ? 'line-through text-zinc-400 dark:text-zinc-500' : 'text-zinc-800 dark:text-zinc-200 font-medium'}">
+                    ${d.task}
+                  </label>
+                </div>
+              </div>
+
+              <!-- Col 3: Focus Time Input & Timer Target Button -->
+              <div class="lg:col-span-2 flex items-center gap-2">
+                <div class="flex items-center bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 rounded-lg px-2 py-1 w-24">
+                  <input
+                    type="number"
+                    min="0"
+                    max="1440"
+                    value="${entry.focusMinutes || ''}"
+                    placeholder="0"
+                    onchange="updateDayField('${d.id}', 'focusMinutes', Math.max(0, parseInt(this.value) || 0))"
+                    class="w-full bg-transparent text-xs font-mono font-medium text-zinc-800 dark:text-zinc-200 focus:outline-none text-right pr-1"
+                  />
+                  <span class="text-[11px] text-zinc-400 font-mono">min</span>
+                </div>
+                <button
+                  type="button"
+                  onclick="selectTimerDay('${d.id}')"
+                  title="${isTimerTarget ? 'Active Timer Target' : 'Link Top Focus Timer to ' + d.date}"
+                  class="p-1.5 rounded-lg border transition ${isTimerTarget ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100' : 'border-zinc-200 dark:border-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'}"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3 2 6m20 0-3-3M10 2h4"/></svg>
+                </button>
+              </div>
+
+              <!-- Col 4: Daily Habits (Quran & Workout Toggle Pills) -->
+              <div class="lg:col-span-2 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onclick="updateDayField('${d.id}', 'quran', ${!entry.quran})"
+                  class="px-2.5 py-1 rounded-lg text-xs font-medium border transition flex items-center gap-1.5 ${entry.quran ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : 'bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800'}"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full ${entry.quran ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'}"></span>
+                  Quran
+                </button>
+
+                <button
+                  type="button"
+                  onclick="updateDayField('${d.id}', 'workout', ${!entry.workout})"
+                  class="px-2.5 py-1 rounded-lg text-xs font-medium border transition flex items-center gap-1.5 ${entry.workout ? 'bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800' : 'bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800'}"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full ${entry.workout ? 'bg-amber-500' : 'bg-zinc-300 dark:bg-zinc-600'}"></span>
+                  Workout
+                </button>
+              </div>
+
+              <!-- Col 5: 1–5 Star Rating & Note Toggle -->
+              <div class="lg:col-span-2 flex items-center justify-between lg:justify-end gap-2">
+                <div class="flex items-center" aria-label="Daily Rating">
+                  ${starsHtml}
+                </div>
+                <button
+                  type="button"
+                  onclick="toggleNoteDrawer('${d.id}')"
+                  title="Daily Reflection Note"
+                  class="p-1.5 rounded-lg border transition relative ${entry.noteOpen || hasNote ? 'border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 bg-zinc-100/70 dark:bg-zinc-800' : 'border-transparent text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'}"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  ${hasNote ? '<span class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-blue-500"></span>' : ''}
+                </button>
+              </div>
+            </div>
+
+            <!-- Expandable Daily Note Input -->
+            ${entry.noteOpen ? `
+              <div class="px-4 pb-3 pt-0.5">
+                <input
+                  id="note-input-${d.id}"
+                  type="text"
+                  value="${(entry.note || '').replace(/"/g, '&quot;')}"
+                  placeholder="Quick reflection, blockers, or key takeaway for ${d.date}..."
+                  oninput="updateDayField('${d.id}', 'note', this.value)"
+                  onblur="renderRows()"
+                  class="w-full text-xs bg-zinc-50 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-500"
+                />
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Export JSON Backup
+    function exportData() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        schedule: INITIAL_DAYS.map(d => ({
+          ...d,
+          progress: appState.entries[d.id]
+        }))
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `20-day-tracker-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Exported progress JSON');
+    }
+
+    // Trigger Hidden File Input for JSON Import
+    function triggerImport() {
+      const input = document.getElementById('import-file-input');
+      if (input) {
+        input.value = '';
+        input.click();
+      }
+    }
+
+    // Handle JSON File Restore
+    function handleImportFile(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && Array.isArray(parsed.schedule)) {
+            parsed.schedule.forEach(item => {
+              if (item.id && appState.entries[item.id] && item.progress) {
+                appState.entries[item.id] = {
+                  ...createEmptyEntry(),
+                  ...item.progress
+                };
+              }
+            });
+            if (parsed.goals && typeof parsed.goals === 'object') {
+              appState.goals = { ...appState.goals, ...parsed.goals };
+            }
+          } else if (parsed && parsed.entries) {
+            INITIAL_DAYS.forEach(d => {
+              if (parsed.entries[d.id]) {
+                appState.entries[d.id] = {
+                  ...createEmptyEntry(),
+                  ...parsed.entries[d.id]
+                };
+              }
+            });
+            if (parsed.goals) {
+              appState.goals = { ...appState.goals, ...parsed.goals };
+            }
+          } else {
+            throw new Error('Invalid backup format');
+          }
+
+          saveState();
+          updateKPIs();
+          renderRows();
+          renderGoals();
+          showToast('Backup restored successfully!');
+        } catch (err) {
+          console.error('Import error:', err);
+          showToast('Invalid JSON backup file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Reset Modal Controls
+    function openResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmResetData() {
+      INITIAL_DAYS.forEach(d => {
+        appState.entries[d.id] = createEmptyEntry();
+      });
+      SPRINT_GOALS.forEach(g => {
+        appState.goals[g.id] = false;
+      });
+      appState.activeTimerDayId = 'nov-27';
+      saveState();
+      updateTimerTargetDisplay();
+      updateKPIs();
+      renderRows();
+      renderGoals();
+      closeResetModal();
+      showToast('All tracker data reset');
+    }
+
+    // Bootstrap App on Window Load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      populateTimerDaySelect();
+      updateTimerTargetDisplay();
+      updateKPIs();
+      renderRows();
+      renderGoals();
+    });
+  </script>
+</body>
+</html>
